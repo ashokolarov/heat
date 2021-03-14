@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "-Wall -O3 -mfma -mavx2 -lpython3.8")
 
 include_directories(.)
 include_directories(src)
+include_directories(/usr/include/python3.8/)
 include_directories(/home/alexshokolarov/Documents/Resources/cpplibs/matplotlib-cpp/)
 
 find_package(Python3 COMPONENTS Development)

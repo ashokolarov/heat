@@ -10,7 +10,6 @@
 #include <utility>
 #include <stdexcept>
 
-
 template <typename T>
 class Vector{
 public:
@@ -41,7 +40,7 @@ public:
             length(n), data(new T[n]){}
 
     // Initialiser list constructor
-    Vector(std::initializer_list<T> l) :
+    [[maybe_unused]] Vector(std::initializer_list<T> l) :
             Vector(l.size()){
         std::uninitialized_copy(l.begin(),l.end(), data);
     }
@@ -196,7 +195,7 @@ public:
     const std::pair<int,int> shape;
     std::map< std::pair<int,int>, T > internal;
 
-    Sparse(int nrows, int ncols) :
+    [[maybe_unused]] Sparse(int nrows, int ncols) :
             shape({nrows, ncols})
     {}
 
