@@ -13,7 +13,7 @@ conjugate gradient method is used.
 
 ![Formulation](img/sin.png)
 
-### 2D solution with initial condition of y(t=0) = 10sin(πx)sin(πy) and diffusion coefficient of 0.1
+### 2D solution with initial condition of y(t=0) = 100sin(πx)sin(πy) and diffusion coefficient of 0.1
 
 ![Alt Text](img/Laplace2D.gif)
 
