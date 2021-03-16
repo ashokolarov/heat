@@ -6,11 +6,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
-static const std::string dir = "/home/alexshokolarov/Documents/Projects/heat/plot/";
+static const std::string dir = "/home/alexshokolarov/Documents/Projects/heat/plot/data/";
 
 static inline double initial(double x){
-    return 10*std::sin(x);
+    return 10*std::sin(M_PI * x);
 }
 
 template<typename T>
@@ -54,7 +55,7 @@ public:
     Vector<T> w0;
 
     std::ofstream temp;
-    std::ofstream xcor;
+    std::ofstream coordinates;
     std::ofstream time;
 
     Heat(T _alpha, int _m, T Ttot, T _dt) :
@@ -66,7 +67,7 @@ public:
 
         time.open(dir + "time.txt", std::ios::ate);
         temp.open(dir + "temp.txt", std::ios::ate);
-        xcor.open(dir + "xcor.txt", std::ios::ate);
+        coordinates.open(dir + "coordinates.txt", std::ios::ate);
 
         for (int i=0; i<totp; i++)
         {
@@ -101,20 +102,15 @@ public:
 
         w0 = Vector<T>::ones(w0.size());
 
-        for (int i=0; i<totp; i++)
-        {
-            for (int k=0; k<n; k++)
-            {
-                T coor = (std::fmod(i / std::pow(m,k), m) + 1) / (m + 1);
-                w0[i] *= initial(M_PI * coor);
-
-                xcor << coor << " ";
-                temp << w0[i] << " ";
+        for (int i=0; i<totp; i++){
+            for (int j=0; j<n; j++){
+                double coor = (std::fmod(int(i/std::pow(m,j)),m)+1)/(m+1);
+                w0[i] *= initial(coor);
+                coordinates << coor << " ";
             }
-
+            temp << w0[i] << " ";
         }
-
-        xcor.close();
+        coordinates.close();
         temp << '\n';
     }
 

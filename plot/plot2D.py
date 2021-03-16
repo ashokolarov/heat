@@ -1,45 +1,68 @@
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator
 import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
+import matplotlib.animation as animation
+import matplotlib
 
-with open('time.txt') as tfile:
+plt.rcParams['animation.html'] = 'html5'
+
+with open('data/time.txt') as tfile:
     l = tfile.readlines()[0].split()
     t = [float(x) for x in l]
 
-with open('xcor.txt') as xfile:
+with open('data/coordinates.txt') as xfile:
     l = xfile.readlines()[0].split()
     x = [float(x) for x in l]
 
+x = np.unique(x)
+x,y = np.meshgrid(x,x)
+
 temp = []
 
-with open('temp.txt') as sfile:
+with open('data/temp.txt') as sfile:
     for l in sfile.readlines():
         te = [float(x) for x in l.split()]
         temp.append(te)
 
-
-x, t = np.meshgrid(x,t)
 temp = np.array(temp)
+size = x.shape[0]
 
-fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
 
+fig = plt.figure(figsize=(8,6))
+ax = fig.add_subplot(111, projection='3d')
 
-# Plot the surface.
-surf = ax.plot_surface(x, t, temp, cmap=cm.jet,
-                       linewidth=0, antialiased=False)
+t=np.array(t)
+t = t[t<0.6]
+N = len(t)
+dt = t[1] - t[0]
+fps = 1/dt
 
-# Customize the z axis.
-ax.zaxis.set_major_locator(LinearLocator(10))
-# A StrMethodFormatter is used automatically
-ax.zaxis.set_major_formatter('{x:.02f}')
-
-# Add a color bar which maps values to colors.
-fig.colorbar(surf, shrink=0.5, aspect=5)
+wframe = None
+Z = temp[0].reshape(size,size)
+Zmax = np.max(temp)
 
 ax.set_xlabel('x-axis', fontsize=10)
-ax.set_ylabel('Time [s]', fontsize=10)
+ax.set_ylabel('y-axis', fontsize=10)
 ax.set_zlabel('Temperature [K]', fontsize=10)
 
-ax.set_title(r"1D Laplace equation, y(0)=10sin(x), $\alpha$=0.1")
-plt.show()
+def update(idx):
+    global wframe
+    ax.set_title(fr"Laplace 2D, $\alpha$=0.1, t={t[idx]}[s]")
+    if wframe:
+        ax.collections.remove(wframe)
+    ax.set_zlim(0, Zmax)
+
+    # Plot the new wireframe and pause briefly before continuing.
+    wframe = ax.plot_surface(x, y, temp[idx].reshape(size,size), cmap="jet",
+                              linewidth=0, antialiased=False, vmin=0, vmax=Zmax)
+    
+    cb = fig.colorbar(wframe, shrink=0.5, aspect=5)
+    plt.pause(.001)
+    cb.remove()
+    
+ani = animation.FuncAnimation(fig, update, N, interval=dt)
+
+fn = 'Laplace 2d'
+ani.save(fn+'.gif',writer='imagemagick',fps=10)
+
+
